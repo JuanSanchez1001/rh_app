@@ -13,7 +13,7 @@ const tabIndex = ref(0);
 let id_incidencia = ref();
 let autorizaIncidencia = ref(0);
 let goceFlag = ref(0);
-let voboflag = ref(0);
+// let voboflag = ref(0);
 let autorizaIncidencia1 = ref(0);
 let goceFlag1 = ref(0);
 let voboflag1 = ref(0);
@@ -49,8 +49,31 @@ const incidenciaInterface = reactive({
     fecha_ini: "",
     fecha_fin: "",
     autorizaFlag: "",
-    voboFlag: ""
+    voboFlag: "",
+    vacacionesflag
 });
+
+const salidaForm = reactive({
+    v_userModify: nomina,
+    v_autorizaflag: incidenciaInterface.autorizaIncidencia,
+    v_goceflag: incidenciaInterface.goceFlag,
+    v_placas: incidenciaInterface.placas,
+    v_horasalida: incidenciaInterface.hora_salida,
+    v_horaregreso: incidenciaInterface.hora_regreo,
+    v_regresaflag: incidenciaInterface.regresaFlag,
+    v_observaciones: incidenciaInterface.observaciones
+});
+const ausenciaForm = reactive({
+    v_usermodify: nomina,
+    v_autorizaflag: incidenciaInterface.autorizaIncidencia,
+    v_voboflag: incidenciaInterface.voboFlag,
+    v_goceflag: incidenciaInterface.goceFlag,
+    v_vacacionesflag: incidenciaInterface.vacacionesflag,
+    v_fechaini: incidenciaInterface.fecha_ini,
+    v_fechafin: incidenciaInterface.fecha_fin,
+    v_diasqty: incidenciaInterface.diasqty,
+    v_observaciones: incidenciaInterface.observaciones
+})
 
 async function getIncidencias() {
     // console.log("Cambia: ", tabIndex.value);
@@ -101,6 +124,22 @@ async function getIncidenciasByID(id) {
     }
 }
 
+//Peticiones para actualizar
+async function sendUpdateSalida() {
+    try{
+        const response = await api.put(`/incidencia/salida/${id_incidencia}`, salidaForm);
+        console.log("Se actualizo");
+    }catch(err){
+        
+    }
+}
+async function sendUpdateAusencia() {
+    try{
+        const response = await api.put(`/incidencia/ausencia/`, ausenciaForm)
+    }catch(err){
+
+    }
+}
 onMounted (() => {
     // getAllIncidencias()
     getIncidencias()
@@ -244,7 +283,7 @@ onMounted (() => {
         </b-container>
         <template #footer>
             <b-button>Cancelar</b-button>
-            <b-button variant="success">Editar</b-button>
+            <b-button variant="success" v-on:click="sendUpdateSalida">Editar</b-button>
         </template>
     </b-modal>
     <b-modal content-class="edit-modal" id="modal-scrollable modal-multi-2" scrollable title="" v-model="modalAusencia" size="lg">
@@ -334,6 +373,10 @@ onMounted (() => {
                 </b-col>
             </b-row>
         </b-container>
+        <template #footer>
+            <b-button>Cancelar</b-button>
+            <b-button v-on:click="sendUpdateAusencia" variant="success">Editar</b-button>
+        </template>
     </b-modal>
 </template>
 <style scoped>
