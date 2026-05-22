@@ -17,7 +17,7 @@ let goceFlag = ref(0);
 let autorizaIncidencia1 = ref(0);
 let goceFlag1 = ref(0);
 let voboflag1 = ref(0);
-let nomina = localStorage.getItem('nomina')
+let nomina = sessionStorage.getItem('nomina')
 
 const columns = ref([
     {label: "ID", field: "v_id"},
@@ -34,7 +34,7 @@ const arr_ausencias = ref([]);
 const incidenciaInterface = reactive({
     nombre: "",
     motivo: "",
-    goceFlag: "",
+    goceFlag: 2,
     tipoAuto: "",
     placas: "",
     lugar: "",
@@ -48,9 +48,11 @@ const incidenciaInterface = reactive({
     diasqty: "",
     fecha_ini: "",
     fecha_fin: "",
-    autorizaFlag: "",
-    voboFlag: "",
-    vacacionesflag
+    autorizaFlag: 2,
+    voboFlag: 2,
+    vacacionesflag: 2,
+    autorizaIncidencia: 2
+
 });
 
 const salidaForm = reactive({
@@ -63,17 +65,7 @@ const salidaForm = reactive({
     v_regresaflag: incidenciaInterface.regresaFlag,
     v_observaciones: incidenciaInterface.observaciones
 });
-const ausenciaForm = reactive({
-    v_usermodify: nomina,
-    v_autorizaflag: incidenciaInterface.autorizaIncidencia,
-    v_voboflag: incidenciaInterface.voboFlag,
-    v_goceflag: incidenciaInterface.goceFlag,
-    v_vacacionesflag: incidenciaInterface.vacacionesflag,
-    v_fechaini: incidenciaInterface.fecha_ini,
-    v_fechafin: incidenciaInterface.fecha_fin,
-    v_diasqty: incidenciaInterface.diasqty,
-    v_observaciones: incidenciaInterface.observaciones
-})
+// const v_fecha1 = ref(incidenciaInterface.fecha_ini);
 
 async function getIncidencias() {
     // console.log("Cambia: ", tabIndex.value);
@@ -99,7 +91,8 @@ async function getIncidenciasByID(id) {
         // console.log("El id es_: ",id)
         id_incidencia.value = id;
         const response = await api.get(`/incidencia/incidencia/${id}`);
-        console.log("El autoriza es_: ",response.data[0].autorizaflga)
+        // console.log("response goce", response.data[0].)
+        // console.log("El autoriza es_: ",response.data[0].autorizaflga)
         // console.log("El id es_: ",id)
         incidenciaInterface.nombre = response.data[0].nombre;
         incidenciaInterface.motivo = response.data[0].motivo;
@@ -126,16 +119,32 @@ async function getIncidenciasByID(id) {
 
 //Peticiones para actualizar
 async function sendUpdateSalida() {
+    // console.log(v_fecha1);
     try{
-        const response = await api.put(`/incidencia/salida/${id_incidencia}`, salidaForm);
+        const response = await api.put(`/incidencia/salida/${id_incidencia.value}`, salidaForm);
         console.log("Se actualizo");
     }catch(err){
         
     }
 }
 async function sendUpdateAusencia() {
+    console.log("Goce: ",incidenciaInterface.goceFlag);
+    console.log("aut: ",incidenciaInterface.autorizaFlag);
+    console.log("vobo: ",incidenciaInterface.voboFlag);
     try{
-        const response = await api.put(`/incidencia/ausencia/`, ausenciaForm)
+        
+        // const response = await api.put(`/incidencia/ausencia/${id_incidencia.value}`,{
+        //     v_usermodify: nomina,
+        //     v_autorizaflag: incidenciaInterface.autorizaIncidencia,
+        //     v_voboflag: incidenciaInterface.voboFlag,
+        //     v_goceflag: incidenciaInterface.goceFlag,
+        //     v_vacacionesflag: incidenciaInterface.vacacionesflag,
+        //     v_fechaini: incidenciaInterface.fecha_ini,
+        //     v_fechafin: incidenciaInterface.fecha_fin,
+        //     v_diasqty: incidenciaInterface.diasqty,
+        //     v_observaciones: incidenciaInterface.observaciones
+        // }
+        // )
     }catch(err){
 
     }
@@ -287,24 +296,29 @@ onMounted (() => {
         </template>
     </b-modal>
     <b-modal content-class="edit-modal" id="modal-scrollable modal-multi-2" scrollable title="" v-model="modalAusencia" size="lg">
+        <template #header>
+            <b-container class="d-flex justify-content-center align-items-center">
+                <h4>Editar Ausencia {{ id_incidencia }}</h4>
+            </b-container>
+        </template>
         <b-container>
             <b-row class="mb-3">
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Nombre</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.nombre" disabled>
+                        <input type="text" class="input" :value="incidenciaInterface.nombre" disabled>
                     </div>
                 </b-col>
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Motivo</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.motivo" disabled>
+                        <input type="text" class="input" :value="incidenciaInterface.motivo" disabled>
                     </div>
                 </b-col>
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Telefono</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.telefono">
+                        <input type="text" class="input" :value="incidenciaInterface.telefono">
                     </div>
                 </b-col>
             </b-row>
@@ -312,19 +326,19 @@ onMounted (() => {
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Desde</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.fecha_ini">
+                        <input type="text" class="input" :value="incidenciaInterface.fecha_ini">
                     </div>
                 </b-col>
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Hasta</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.fecha_ini">
+                        <input type="text" class="input" :value="incidenciaInterface.fecha_fin">
                     </div>
                 </b-col>
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Dias</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.diasqty">
+                        <input type="text" class="input" :value="incidenciaInterface.diasqty">
                     </div>
                 </b-col>
             </b-row>
@@ -333,27 +347,39 @@ onMounted (() => {
                     <div class="input-group">
                         <label for="" class="label">VoBo</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.voboFlag"> -->
-                        <b-form-checkbox v-model="voboflag1" value="1" unchecked-value="0"></b-form-checkbox>
-                        <span class="checkbox-text" v-if="voboflag1 == 1">Si</span>
-                        <span class="checkbox-text" v-else-if="voboflag1 == 0">No</span>
+                        <b-form-checkbox 
+                            v-model="incidenciaInterface.voboFlag" 
+                            value="1" 
+                            unchecked-value="2"
+                            button
+                        ></b-form-checkbox>
+                        <span class="checkbox-text" v-if="incidenciaInterface.voboFlag == 0"><i class="bi bi-exclamation-circle-fill"></i></span>
+                        <span class="checkbox-text" v-if="incidenciaInterface.voboFlag == 1"><i class="bi bi-hand-thumbs-up"></i>Si</span>
+                        <span class="checkbox-text" v-else-if="incidenciaInterface.voboFlag == 2"><i class="bi bi-emoji-frown"></i>No</span>
                     </div>
                 </b-col>
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Con goce</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.goceFlag"> -->
-                        <b-form-checkbox v-model="goceFlag1" value="1" unchecked-value="0"></b-form-checkbox>
-                        <span class="checkbox-text" v-if="goceFlag1 == 1">Si</span>
-                        <span class="checkbox-text" v-else-if="goceFlag1 == 0">No</span>
+                        <b-form-checkbox 
+                            v-model="incidenciaInterface.goceFlag" 
+                            value="1" 
+                            unchecked-value="2"
+                            button
+                        ></b-form-checkbox>
+                        <span class="checkbox-text" v-if="incidenciaInterface.goceFlag == 0"><i class="bi bi-exclamation-circle-fill"></i></span>
+                        <span class="checkbox-text" v-if="incidenciaInterface.goceFlag == 1"><i class="bi bi-cash-coin"></i>Si</span>
+                        <span class="checkbox-text" v-else-if="incidenciaInterface.goceFlag == 2"><i class="bi bi-emoji-frown"></i>No</span>
                     </div>
                 </b-col>
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Autoriza</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.autorizaFlag"> -->
-                         <b-form-checkbox v-model="autorizaIncidencia1" value="1" unchecked-value="0"></b-form-checkbox>
-                        <span class="checkbox-text" v-if="autorizaIncidencia1 == 1">Si</span>
-                        <span class="checkbox-text" v-else-if="autorizaIncidencia1 == 0">No</span>
+                         <b-form-checkbox v-model="incidenciaInterface.autorizaFlag" value="1" unchecked-value="2"></b-form-checkbox>
+                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1">Si</span>
+                        <span class="checkbox-text" v-else-if="incidenciaInterface.autorizaFlag == 2">No</span>
                     </div>
                 </b-col>
             </b-row>
@@ -361,14 +387,14 @@ onMounted (() => {
                 <b-col cols="6">
                     <div class="input-group">
                         <label for="" class="label">Descripcion</label>
-                        <textarea name="" id="" class="textarea" v-model="incidenciaInterface.descripcion"></textarea>
+                        <textarea name="" id="" class="textarea" :value="incidenciaInterface.descripcion"></textarea>
                     </div>
                 </b-col>
                 <b-col cols="6">
                     <div class="input-group">
                         <label for="" class="label">Observaciones</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.observaciones"> -->
-                         <textarea name="" id="" class="textarea" v-model="incidenciaInterface.observaciones"></textarea>
+                         <textarea name="" id="" class="textarea" :value="incidenciaInterface.observaciones"></textarea>
                     </div>
                 </b-col>
             </b-row>

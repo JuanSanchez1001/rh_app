@@ -65,7 +65,7 @@ const calculateDays = (fechas) => {
     // console.log(fechas)
     let fecha1 = fechas[0];
     let fecha2 = fechas[1];
-    console.log(fechas[0].getDate());
+    // console.log(fechas[0].getDate());
 
     ausenciaForm.fecha_ini = fechas[0].getFullYear() + "-" + fechas[0].getMonth() + "-" + fechas[0].getDate();
     ausenciaForm.fecha_fin = fechas[1].getFullYear() + "-" + fechas[1].getMonth() + "-" + fechas[1].getDate();
@@ -74,11 +74,11 @@ const calculateDays = (fechas) => {
 }
 
 async function sendFormularioAusencia() {
-    // console.log(ausenciaForm);
+    //  console.log(ausenciaForm);
     // console.log("Nueva fecha: ",calculateDays(ausenciaForm.fecha_ini));
     
     try{
-        console.log(ausenciaForm);
+        // console.log(ausenciaForm);
         const response = await api.post('/incidencia/incidencia_ausencia', ausenciaForm);
             Swal.fire({
                 title: "Success",
