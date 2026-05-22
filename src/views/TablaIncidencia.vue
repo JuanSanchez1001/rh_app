@@ -377,8 +377,13 @@ onMounted (() => {
                     <div class="input-group">
                         <label for="" class="label">Autoriza</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.autorizaFlag"> -->
-                         <b-form-checkbox v-model="incidenciaInterface.autorizaFlag" value="1" unchecked-value="2"></b-form-checkbox>
-                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1">Si</span>
+                         <b-form-checkbox 
+                         v-model="incidenciaInterface.autorizaFlag" 
+                         value="1" 
+                         unchecked-value="2"
+                         ></b-form-checkbox>
+                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1"><i class="bi bi-check-circle-fill"></i>Si</span>
+                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1"><i class="bi bi-check-circle-fill"></i>Si</span>
                         <span class="checkbox-text" v-else-if="incidenciaInterface.autorizaFlag == 2">No</span>
                     </div>
                 </b-col>
