@@ -6,7 +6,7 @@ import api from '@/js/global';
 defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue']);
 
-let nomina = sessionStorage.getItem('nomina');
+let nomina = localStorage.getItem('nomina');
 const sidebar_menu = ref([])
 
 async function getMainMenu() {

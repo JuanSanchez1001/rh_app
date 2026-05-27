@@ -5,19 +5,19 @@ import { VueGoodTable } from 'vue-good-table-next';
 import 'vue-good-table-next/dist/vue-good-table-next.css';
 import { BTab,BTabs, BContainer, BRow, BCol,BButton, BModal, BFormCheckbox } from 'bootstrap-vue-next';
 import api from '@/js/global';
-import { VueDatePicker } from '@vuepic/vue-datepicker';
+import Swal from 'sweetalert2';
 
-const modalSalida = ref(false);
-const modalAusencia = ref(false);
+let modalSalida = ref(false);
+let modalAusencia = ref(false);
 const tabIndex = ref(0);
 let id_incidencia = ref();
-let autorizaIncidencia = ref(0);
+// let autorizaIncidencia = ref(0);
 let goceFlag = ref(0);
 // let voboflag = ref(0);
 let autorizaIncidencia1 = ref(0);
 let goceFlag1 = ref(0);
 let voboflag1 = ref(0);
-let nomina = sessionStorage.getItem('nomina')
+let nomina = localStorage.getItem('nomina')
 
 const columns = ref([
     {label: "ID", field: "v_id"},
@@ -51,20 +51,10 @@ const incidenciaInterface = reactive({
     autorizaFlag: 2,
     voboFlag: 2,
     vacacionesflag: 2,
-    autorizaIncidencia: 2
+    autorizaFlag: 2
 
 });
 
-const salidaForm = reactive({
-    v_userModify: nomina,
-    v_autorizaflag: incidenciaInterface.autorizaIncidencia,
-    v_goceflag: incidenciaInterface.goceFlag,
-    v_placas: incidenciaInterface.placas,
-    v_horasalida: incidenciaInterface.hora_salida,
-    v_horaregreso: incidenciaInterface.hora_regreo,
-    v_regresaflag: incidenciaInterface.regresaFlag,
-    v_observaciones: incidenciaInterface.observaciones
-});
 // const v_fecha1 = ref(incidenciaInterface.fecha_ini);
 
 async function getIncidencias() {
@@ -72,11 +62,19 @@ async function getIncidencias() {
     try{
         switch(tabIndex.value){
             case 0:
-                const responseSalidas = await api.get('/incidencia/salidas');
+                const responseSalidas = await api.get('/incidencia/salidas', {
+                    params: {
+                        userid: nomina
+                    }
+                });
                 arr_salidas.value = responseSalidas.data;
                 break;
             case 1:
-                const responseAusencias = await api.get('/incidencia/ausencias');
+                const responseAusencias = await api.get('/incidencia/ausencias', {
+                    params: {
+                        userid: nomina
+                    }
+                });
                 arr_ausencias.value = responseAusencias.data;
                 break;
             default:
@@ -119,32 +117,50 @@ async function getIncidenciasByID(id) {
 
 //Peticiones para actualizar
 async function sendUpdateSalida() {
-    // console.log(v_fecha1);
+    //console.log();
     try{
-        const response = await api.put(`/incidencia/salida/${id_incidencia.value}`, salidaForm);
+        const response = await api.put(`/incidencia/salida/${id_incidencia.value}`, {
+            v_userModify: nomina,
+            v_autorizaflag: incidenciaInterface.autorizaFlag,
+            v_goceflag: incidenciaInterface.goceFlag,
+            v_placas: incidenciaInterface.placas,
+            v_horasalida: incidenciaInterface.hora_salida,
+            v_horaregreso: incidenciaInterface.hora_regreo,
+            v_regresaflag: incidenciaInterface.regresaFlag,
+            v_observaciones: incidenciaInterface.observaciones
+        });
         console.log("Se actualizo");
+        Swal.fire({
+            title: "Exito",
+            text: "Se actualizo el registro: " + id_incidencia,
+            icon: "success"
+        });
     }catch(err){
         
     }
 }
 async function sendUpdateAusencia() {
-    console.log("Goce: ",incidenciaInterface.goceFlag);
-    console.log("aut: ",incidenciaInterface.autorizaFlag);
-    console.log("vobo: ",incidenciaInterface.voboFlag);
+    // console.log("Goce: ",incidenciaInterface.goceFlag);
+    // console.log("aut: ",incidenciaInterface.autorizaFlag);
+    // console.log("obs: ",incidenciaInterface.observaciones);
     try{
         
-        // const response = await api.put(`/incidencia/ausencia/${id_incidencia.value}`,{
-        //     v_usermodify: nomina,
-        //     v_autorizaflag: incidenciaInterface.autorizaIncidencia,
-        //     v_voboflag: incidenciaInterface.voboFlag,
-        //     v_goceflag: incidenciaInterface.goceFlag,
-        //     v_vacacionesflag: incidenciaInterface.vacacionesflag,
-        //     v_fechaini: incidenciaInterface.fecha_ini,
-        //     v_fechafin: incidenciaInterface.fecha_fin,
-        //     v_diasqty: incidenciaInterface.diasqty,
-        //     v_observaciones: incidenciaInterface.observaciones
-        // }
-        // )
+        const response = await api.put(`/incidencia/ausencia/${id_incidencia.value}`,{
+            v_usermodify: nomina,
+            v_autorizaflag: incidenciaInterface.autorizaIncidencia,
+            v_voboflag: incidenciaInterface.voboFlag,
+            v_goceflag: incidenciaInterface.goceFlag,
+            v_vacacionesflag: incidenciaInterface.vacacionesflag,
+            v_fechaini: incidenciaInterface.fecha_ini,
+            v_fechafin: incidenciaInterface.fecha_fin,
+            v_diasqty: incidenciaInterface.diasqty,
+            v_observaciones: incidenciaInterface.observaciones
+        });
+        Swal.fire({
+            title: "Exito",
+            text: "Se actualizo el registro: " + id_incidencia,
+            icon: "success"
+        });
     }catch(err){
 
     }
@@ -158,7 +174,9 @@ onMounted (() => {
     <Navbar></Navbar>
 
     <b-container class="mb-3">
-        <b-row>Tabla de incidencias</b-row>
+        <b-row>
+            <h1 class="d-flex justify-content-center align-items-center">Tabla de incidencias</h1>
+        </b-row>
 
         <b-row>
             <b-col class="mb-3">
@@ -186,7 +204,7 @@ onMounted (() => {
         </b-row>
     </b-container>
 
-    <b-modal content-class="edit-modal" id="modal-scrollable modal-multi-2" scrollable title="" v-model="modalSalida" size="lg">
+    <b-modal content-class="edit-modal" id="modal-scrollable modal-multi-2" scrollable title="" v-model="modalSalida" size="lg" no-close-on-backdrop no-close-on-esc>
         <template #header>
             <b-container class="d-flex justify-content-center align-items-center">
                 <h4>Editar solicitud {{ id_incidencia }}</h4>
@@ -230,7 +248,7 @@ onMounted (() => {
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Hora Salida</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.hora_salida">
+                        <input type="text" class="input" :value="incidenciaInterface.hora_salida">
                         <!-- <VueDatePicker v-model="incidenciaInterface.hora_salida" time-picker></VueDatePicker> -->
 
                     </div>
@@ -238,7 +256,7 @@ onMounted (() => {
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Hora Regreso</label>
-                        <input type="text" class="input" v-model="incidenciaInterface.hora_regreo">
+                        <input type="text" class="input" :value="incidenciaInterface.hora_regreo">
                         <!-- <VueDatePicker v-model="incidenciaInterface.hora_regreo" time-picker></VueDatePicker> -->
 
                     </div>
@@ -249,18 +267,30 @@ onMounted (() => {
                     <div class="input-group">
                         <label for="" class="label">Con goce</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.goceFlag"> -->
-                        <b-form-checkbox v-model="goceFlag" value="1" unchecked-value="0"></b-form-checkbox>
-                        <span class="checkbox-text" v-if="goceFlag == 1">Si</span>
-                        <span class="checkbox-text" v-else-if="goceFlag == 0">No</span>
+                        <b-form-checkbox 
+                            v-model="incidenciaInterface.goceFlag" 
+                            value="1" 
+                            unchecked-value="2"
+                            button
+                        ></b-form-checkbox>
+                        <span class="checkbox-text" v-if="incidenciaInterface.goceFlag == 0"><i class="bi bi-exclamation-circle-fill"></i></span>
+                        <span class="checkbox-text" v-if="incidenciaInterface.goceFlag == 1"><i class="bi bi-cash-coin"></i>Si</span>
+                        <span class="checkbox-text" v-else-if="incidenciaInterface.goceFlag == 2"><i class="bi bi-emoji-frown"></i>No</span>
                     </div>
                     </b-col>
                     <b-col>
                         <div class="input-group">
                             <label for="" class="label">Autoriza</label>
                             <!-- <input type="text" class="input" v-model="incidenciaInterface.autorizaFlag"> -->
-                            <b-form-checkbox v-model="autorizaIncidencia" value="1" unchecked-value="0"></b-form-checkbox>
-                            <span class="checkbox-text" v-if="autorizaIncidencia == 1">Si</span>
-                            <span class="checkbox-text" v-else-if="autorizaIncidencia == 0">No</span>
+                            <b-form-checkbox 
+                         v-model="incidenciaInterface.autorizaFlag" 
+                         value="1" 
+                         unchecked-value="2"
+                         button
+                         ></b-form-checkbox>
+                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 0"><i class="bi bi-exclamation-circle-fill"></i></span>
+                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1"><i class="bi bi-check-circle-fill"></i>Si</span>
+                        <span class="checkbox-text" v-else-if="incidenciaInterface.autorizaFlag == 2">No</span>
                     </div>
                 </b-col>
             </b-row>
@@ -291,7 +321,7 @@ onMounted (() => {
             </b-row>
         </b-container>
         <template #footer>
-            <b-button>Cancelar</b-button>
+            <b-button v-on:click="modalSalida = false;autorizaIncidencia = 0; goceFlag = 0; ">Cancelar</b-button>
             <b-button variant="success" v-on:click="sendUpdateSalida">Editar</b-button>
         </template>
     </b-modal>
@@ -381,8 +411,9 @@ onMounted (() => {
                          v-model="incidenciaInterface.autorizaFlag" 
                          value="1" 
                          unchecked-value="2"
+                         button
                          ></b-form-checkbox>
-                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1"><i class="bi bi-check-circle-fill"></i>Si</span>
+                        <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 0"><i class="bi bi-exclamation-circle-fill"></i></span>
                         <span class="checkbox-text" v-if="incidenciaInterface.autorizaFlag == 1"><i class="bi bi-check-circle-fill"></i>Si</span>
                         <span class="checkbox-text" v-else-if="incidenciaInterface.autorizaFlag == 2">No</span>
                     </div>
@@ -399,7 +430,7 @@ onMounted (() => {
                     <div class="input-group">
                         <label for="" class="label">Observaciones</label>
                         <!-- <input type="text" class="input" v-model="incidenciaInterface.observaciones"> -->
-                         <textarea name="" id="" class="textarea" :value="incidenciaInterface.observaciones"></textarea>
+                         <textarea name="" id="" class="textarea" v-model="incidenciaInterface.observaciones"></textarea>
                     </div>
                 </b-col>
             </b-row>

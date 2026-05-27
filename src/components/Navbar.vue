@@ -1,12 +1,23 @@
 <script setup>
     import { BNavbar, BNavItem, BNavItemDropdown, BDropdownItem,BNavbarNav, BNavbarBrand,BButton } from 'bootstrap-vue-next';
     import Sidebar from './Sidebar.vue';
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     const isSidebarOpen = ref(false);
+    const isLooged = ref(false);
 
     let nombre = localStorage.getItem('nombre');
-    let departamento = localStorage.getItem('departamento')
+    let departamento = localStorage.getItem('departamento');
 
+    async function checkSession(){
+        if(nombre == '' || nombre == undefined)
+            isLooged = false;
+        else
+            isLooged = true;
+    }
+
+onMounted (() => {
+    checkSession
+})
 </script>
 <template>
     <b-navbar fluid class="nav-menu p-0 mb-3 w-100">
@@ -17,11 +28,12 @@
               <img src="../../assets/img/ftech.png" alt="" style="height: 20px;">
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
-            <b-nav-item-dropdown text="Usuario" right>
+            <b-nav-item-dropdown text="Usuario" right v-if="isLooged == true">
                 <b-dropdown-item> <span><i class="bi bi-person-badge-fill"></i></span> {{ nombre }}</b-dropdown-item>
-                <!-- <b-dropdown-item><span><i class="bi bi-person-vcard-fill"></i></span> Username</b-dropdown-item> -->
                 <b-dropdown-item><span><i class="bi bi-buildings-fill"></i></span> {{ departamento }}</b-dropdown-item>
-                <!-- <b-dropdown-item><span><i class="bi bi-envelope"></i></span> Correo</b-dropdown-item> -->
+            </b-nav-item-dropdown>
+            <b-nav-item-dropdown text="Identificate" right v-if="isLooged == false">
+                <b-dropdown-item :href="'/rh/login'"> <span><i class="bi bi-person-badge-fill"></i></span> Identificarse</b-dropdown-item>
             </b-nav-item-dropdown>
         </b-navbar-nav>
     </b-navbar>
@@ -31,7 +43,8 @@
 </template>
 <style scoped>
 .nav-menu{
-    background-color: #87FA91;
+    background-color: #0091FF;
+    opacity: 0.70;
     border-radius: 15px;
     font-size: large;
     font-weight: bold;

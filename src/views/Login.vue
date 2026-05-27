@@ -16,9 +16,9 @@ async function login() {
         // console.log("usuario: ", user);
         const response = await api.post('/login', user);
         console.log("La nomina: ",response.data[0].nomina);
-        sessionStorage.setItem("nomina", response.data[0].nomina);
-        sessionStorage.setItem("departamento", response.data[0].departamento);
-        sessionStorage.setItem("rol", response.data[0].rol);
+        localStorage.setItem("nomina", response.data[0].nomina);
+        localStorage.setItem("departamento", response.data[0].departamento);
+        localStorage.setItem("rol", response.data[0].rol);
         router.push({name: 'inicio'});
         
     }catch(err){
@@ -39,10 +39,17 @@ async function login() {
         console.error("Se produjo un error", err)
     }
 }
+async function changePassword() {
+    try{
+        
+    }catch(err){
+
+    }
+}
 </script>
 
 <template>
-    <b-container>
+    <b-container class="container-title">
         <b-row>
             <b-col class="mb-3 d-flex justify-content-center align-items-center">
                 <h3>Inciar sesión</h3>
@@ -78,8 +85,32 @@ async function login() {
                             </template>
                         </b-card>
                     </b-tab>
-                    <b-tab title="Crear Usuario">
-    
+                    <b-tab title="Cambiar contraseña">
+                         <b-card>
+                            <b-container>
+                                <b-row>
+                                    <b-col class="mb-3 d-flex justify-content-center align-items-center">
+                                        <div class="input-group">
+                                            <label for="" class="label">Nomina</label>
+                                            <input type="text" class="input" placeholder="No nomina" v-model="user.nomina">
+                                        </div>
+                                    </b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col class="mb-3 d-flex justify-content-center align-items-center">
+                                        <div class="input-group">
+                                            <label for="" class="label">Password</label>
+                                            <input type="password" class="input" placeholder="Contraseña" v-model="user.password">
+                                        </div>
+                                    </b-col>
+                                </b-row>
+                            </b-container>
+                            <template #footer>
+                                <b-container class="d-flex justify-content-end align-items-end">
+                                    <b-button variant="warning" v-on:click="changePassword">Actualizar</b-button>
+                                </b-container>
+                            </template>
+                        </b-card>
                     </b-tab>
                 </b-tabs>
             </b-col>

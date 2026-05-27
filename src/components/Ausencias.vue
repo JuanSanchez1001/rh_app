@@ -5,7 +5,7 @@ import api from '@/js/global';
 import Swal from 'sweetalert2';
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 const hoy = new Date().toLocaleDateString();
-let checkVacaciones = ref(0);
+// let checkVacaciones = ref(0);
 
 const arr_motivos = ref([]);
 // const id_user = ref('');
@@ -14,7 +14,7 @@ const date1 = ref('');
 const ausenciaForm = reactive({
     nomina: "",
     motivo: "",
-    vacacionesFlag: checkVacaciones,
+    vacacionesFlag: 0,
     telefono: "",
     diasQTY: "",
     fecha_ini: "",
@@ -67,28 +67,51 @@ const calculateDays = (fechas) => {
     let fecha2 = fechas[1];
     // console.log(fechas[0].getDate());
 
-    ausenciaForm.fecha_ini = fechas[0].getFullYear() + "-" + fechas[0].getMonth() + "-" + fechas[0].getDate();
-    ausenciaForm.fecha_fin = fechas[1].getFullYear() + "-" + fechas[1].getMonth() + "-" + fechas[1].getDate();
+    ausenciaForm.fecha_ini = fechas[0].getFullYear() + "-" + 
+                            ((fechas[0].getMonth()+1) < 10 ? "0" + (fechas[0].getMonth()+1) : (fechas[0].getMonth()+1)) + "-" + 
+                            (fechas[0].getDate() < 10 ? "0" + fechas[0].getDate() : fechas[0].getDate()); //getMoth returns 0, 11 moths jiji ojito Juanpiboys
 
-    ausenciaForm.diasQTY = ((fecha2-fecha1) / 3600000)/24;
+    ausenciaForm.fecha_fin = fechas[1].getFullYear() + "-" + 
+                            ((fechas[1].getMonth()+1) < 10 ? "0" + (fechas[1].getMonth()+1) : (fechas[1].getMonth()+1)) + "-" + 
+                            (fechas[1].getDate() < 10 ? "0" + fechas[1].getDate(): fechas[1].getDate());
+
+    // console.log("Fecha ini", ausenciaForm.fecha_ini);
+    // console.log("Fecha fin", ausenciaForm.fecha_fin);
+
+    ausenciaForm.diasQTY = (((fecha2-fecha1) / 3600000)/24) + 1;
 }
 
 async function sendFormularioAusencia() {
-    //  console.log(ausenciaForm);
-    // console.log("Nueva fecha: ",calculateDays(ausenciaForm.fecha_ini));
-    
     try{
-        // console.log(ausenciaForm);
+         console.log(ausenciaForm);
         const response = await api.post('/incidencia/incidencia_ausencia', ausenciaForm);
             Swal.fire({
                 title: "Success",
                 text: "Se creo la solicitud de ausencia. Espera autorización",
-                icon: "success"
+                icon: "success",
+                showConfirmButton: true
+            }).then((result) => {
+                if(result.isConfirmed)
+                {
+                    window.location.reload();
+                }       
             });
-    }catch(errr){
-
+    }catch(err){
+        if(err.response){
+            errorMessages("Advetencia", err.response.data.error, "warning");
+        }else {
+            errorMessages("Error", "Se produjo un error", "error")
+        }
+        console.log(err)
     }
 }
+function errorMessages(titulo, texto, icon){
+        Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: icon
+        });
+    }
 
 onMounted( () => {
     getMotivos(1)
@@ -101,7 +124,7 @@ onMounted( () => {
                 <b-col cols="6" class="d-flex justify-content-center align-items-center">
                     <div class="input-group">
                         <label class="label" for="input">No Nomina:</label>
-                        <input class="input text-center" name="input" placeholder="" type="text" style="width: 40%;" v-model="usuarioInfterface.nomina">
+                        <input class="input text-center" name="input" placeholder="Digita tu nomina..." type="text" style="width: 40%;" v-model="usuarioInfterface.nomina">
                         <b-button variant="primary" v-on:click="getUserByNomina">Buscar</b-button>
                     </div>
                 </b-col>
@@ -179,9 +202,9 @@ onMounted( () => {
                     <div class="input-group">
                         <label for="" class="label">Usa vacaciones</label>
                     </div>
-                    <b-form-checkbox id="" v-model="checkVacaciones" value="1" unchecked-value="0"></b-form-checkbox> 
-                    <span class="checkbox-text" v-if="checkVacaciones == 1">Si</span>
-                    <span class="checkbox-text" v-else-if="checkVacaciones== 0"> No</span>
+                    <b-form-checkbox id="" v-model="ausenciaForm.vacacionesFlag" value="1" unchecked-value="0"></b-form-checkbox> 
+                    <span class="checkbox-text" v-if="ausenciaForm.vacacionesFlag == 1">Si</span>
+                    <span class="checkbox-text" v-else-if="ausenciaForm.vacacionesFlag == 0"> No</span>
                 </b-col>
                 <b-col class="d-flex justify-content-center" cols="4">
                     <div class="input-group">

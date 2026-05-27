@@ -8,12 +8,14 @@ import Ausencias from '@/components/Ausencias.vue';
 <template>
     <Navbar></Navbar>
     <!-- <Inicio></Inicio> -->
-    <b-container class="mb-3">
+     <b-container class="container-title mb-3 ">
         <b-row>
             <b-col class="mb-3 d-flex justify-content-center align-items-center">
-                <h3>Crear Incidencia</h3>
+                <h3 class="title">Crear Incidencia</h3>
             </b-col>
         </b-row>
+     </b-container>
+    <b-container class="mb-3">
         <b-row>
             <b-col class="mb-3">
                 <b-tabs active-nav-item-class="font-weight-bold text-uppercase text-danger" class="mb-3" justified>

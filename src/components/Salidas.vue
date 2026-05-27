@@ -79,9 +79,9 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
         salidaForm.auto = "",
         salidaForm.placa = "",
         salidaForm.motivo = "",
-        salidaForm.acompanantesQTY = acompananteQTY,
+        acompananteQTY = 0,
         salidaForm.tel = "",
-        salidaForm.regresa = checkGoBack,
+        checkGoBack = 0,
         salidaForm.hora_salida = "",
         salidaForm.hora_regreso = "",
         salidaForm.lugar = "",
@@ -99,16 +99,30 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
             Swal.fire({
                 title: "Success",
                 text: "Se creo el pase de salida. Espera autorización",
-                icon: "success"
+                icon: "success",
+                showConfirmButton: true
+            }).then((result) => {
+                if(result.isConfirmed)
+                {
+                    window.location.reload();
+                }       
             });
         }catch(err){
-            
+            if(err.response){
+                errorMessages("Advertencia", err.response.data.error, "warning");
+            }else{
+                errorMessages("Error", "Se produjo un error inesperado", "error");
+            }
+            // console.log(err.response.data.error);
         }
     }
     async function closeModal(){
         acompanantes.values().forEach(element => {
             // console.log(element.id,element.nomina)
-            acompanantesForm['acompanante'+element.id] = element.nomina;
+            if(element.nomina != 0)
+                acompanantesForm['acompanante'+element.id] = element.nomina;
+            else
+                acompanantesForm['acompanante'+element.id] = 0;
         });
         acompananteModal.value=false;
     }
@@ -133,6 +147,13 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
             });
         }
     }
+    function errorMessages(titulo, texto, icon){
+        Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: icon
+        })
+    }
 
     onMounted(() => {
         getMotivos(2)
@@ -145,7 +166,7 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
                 <b-col cols="6" class="d-flex justify-content-center align-items-center">
                     <div class="input-group">
                         <label class="label" for="input">No Nomina:</label>
-                        <input class="input text-center" name="input" placeholder="" type="text" style="width: 40%;" v-model="usuarioInfterface.nomina">
+                        <input class="input text-center" name="input" placeholder="Digita tu nomina..." type="text" style="width: 40%;" v-model="usuarioInfterface.nomina">
                         <b-button variant="primary" v-on:click="getUserByNomina">Buscar</b-button>
                     </div>
                 </b-col>
@@ -257,9 +278,11 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
                     <div class="input-group">
                         <label for="" class="label">Regresa</label>
                     </div>
-                    <b-form-checkbox id="" v-model="checkGoBack" value="1" unchecked-value="0"></b-form-checkbox> 
-                    <span class="checkbox-text" v-if="checkGoBack == 1">Regresa</span>
-                    <span class="checkbox-text" v-else-if="checkGoBack== 0"> No regresa</span>
+                    <div>
+                        <b-form-checkbox id="" v-model="checkGoBack" value="1" unchecked-value="0"></b-form-checkbox> 
+                        <span class="checkbox-text" v-if="checkGoBack == 1">Regresa</span>
+                        <span class="checkbox-text" v-else-if="checkGoBack== 0"> No regresa</span>
+                    </div>
                 </b-col>
             </b-row>
             <b-row class="mb-3">
@@ -277,12 +300,13 @@ import { VueDatePicker } from '@vuepic/vue-datepicker';
                         <!-- <input type="text" class="input" v-model="salidaForm.hora_regreso"> -->
                         <VueDatePicker v-model="salidaForm.hora_regreso" time-picker></VueDatePicker>
                     </div>
+                    <span class="checkbox-text" style="color: red; font-size: small;"> En caso de no regresar seleccione la hora 00:00</span>
                 </b-col>
             </b-row>
             <b-row class="mb-3">
                 <b-col class="">
                     <div class="input-group">
-                        <label class="label" for="input">A donde vas:</label>
+                        <label class="label" for="input">Lugar de destino:</label>
                         <textarea name="" id="" class="textarea" v-model="salidaForm.lugar" placeholder="A donde se dirige"></textarea>
                     </div>
                 </b-col>

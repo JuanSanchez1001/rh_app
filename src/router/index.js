@@ -17,6 +17,11 @@ const router = createRouter({
       name: "incidencias",
       path: "/rh/incidencias",
       component: () => import('../views/TablaIncidencia.vue')
+    },
+    {
+      name: "usuarios",
+      path: "/rh/usuarios",
+      component: () => import('../views/Usuarios.vue')
     }
   ],
 })
