@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 
 let temporizador = null;
 const router = useRoute();
-const _time_limit = (60 * 15) * 1000; //una horita les dejamos lo dejamos dificil se ve mas elegante
+const _time_limit = (60 * 15) * 1000; //lo dejamos dificil se ve mas elegante
 
 function closeSession(){
     localStorage.clear();

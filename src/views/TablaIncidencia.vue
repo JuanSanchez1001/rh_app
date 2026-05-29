@@ -133,10 +133,20 @@ async function sendUpdateSalida() {
         Swal.fire({
             title: "Exito",
             text: "Se actualizo el registro: " + id_incidencia,
-            icon: "success"
-        });
+            icon: "success",
+            showConfirmButton: true,
+            showCancelButton: false
+        }).then((result)=> {
+            if(result.isConfirmed){
+                window.location.reload();
+            }
+        })
     }catch(err){
-        
+        if(err.response.data){
+            errorMessages("Advertencia", err.response.data.error, "warning");
+        }else{
+            errorMessages("Error", "Se produjo un error inesperado", "error");
+        }
     }
 }
 async function sendUpdateAusencia() {
@@ -147,7 +157,7 @@ async function sendUpdateAusencia() {
         
         const response = await api.put(`/incidencia/ausencia/${id_incidencia.value}`,{
             v_usermodify: nomina,
-            v_autorizaflag: incidenciaInterface.autorizaIncidencia,
+            v_autorizaflag: incidenciaInterface.autorizaFlag,
             v_voboflag: incidenciaInterface.voboFlag,
             v_goceflag: incidenciaInterface.goceFlag,
             v_vacacionesflag: incidenciaInterface.vacacionesflag,
@@ -158,13 +168,26 @@ async function sendUpdateAusencia() {
         });
         Swal.fire({
             title: "Exito",
-            text: "Se actualizo el registro: " + id_incidencia,
-            icon: "success"
-        });
+            text: "Se actualizo el registro: " + id_incidencia.value,
+            icon: "success",
+            showConfirmButton: true,
+            showCancelButton: false
+        }).then((result) => {
+            if(result.isConfirmed){
+                window.location.reload();
+            }
+        })
     }catch(err){
 
     }
 }
+function errorMessages(titulo, texto, icon){
+        Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: icon
+        })
+    }
 onMounted (() => {
     // getAllIncidencias()
     getIncidencias()
@@ -321,11 +344,11 @@ onMounted (() => {
             </b-row>
         </b-container>
         <template #footer>
-            <b-button v-on:click="modalSalida = false;autorizaIncidencia = 0; goceFlag = 0; ">Cancelar</b-button>
+            <b-button v-on:click="modalSalida = false;autorizaIncidencia = 0; goceFlag = 0;">Cancelar</b-button>
             <b-button variant="success" v-on:click="sendUpdateSalida">Editar</b-button>
         </template>
     </b-modal>
-    <b-modal content-class="edit-modal" id="modal-scrollable modal-multi-2" scrollable title="" v-model="modalAusencia" size="lg">
+    <b-modal content-class="edit-modal" id="modal-scrollable modal-multi-2" scrollable title="" v-model="modalAusencia" size="lg" no-close-on-backdrop no-close-on-esc>
         <template #header>
             <b-container class="d-flex justify-content-center align-items-center">
                 <h4>Editar Ausencia {{ id_incidencia }}</h4>
@@ -436,7 +459,7 @@ onMounted (() => {
             </b-row>
         </b-container>
         <template #footer>
-            <b-button>Cancelar</b-button>
+            <b-button v-on:click="modalSalida = false;autorizaIncidencia = 0; goceFlag = 0;">Cancelar</b-button>
             <b-button v-on:click="sendUpdateAusencia" variant="success">Editar</b-button>
         </template>
     </b-modal>

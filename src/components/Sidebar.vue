@@ -15,7 +15,7 @@ async function getMainMenu() {
   }
 
   try{
-    console.log(nomina);
+    // console.log(nomina);
     const response = await api.get(`/usuarios/menu/${nomina}`);
     sidebar_menu.value = response.data;
     //  console.log(response.data);
@@ -32,7 +32,7 @@ onMounted(() => {
 <template>
   <b-offcanvas :model-value="modelValue" 
     @update:model-value="val => emit('update:modelValue', val)"
-    title="Sistema de Tickets" 
+    title="Incidencias RH" 
     placement="start">
     <div>
         <b-nav vertical class="w-100 text-center" v-for="index in sidebar_menu">
