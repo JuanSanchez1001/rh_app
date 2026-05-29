@@ -5,18 +5,19 @@
     const isSidebarOpen = ref(false);
     const isLooged = ref(false);
 
-    let nombre = localStorage.getItem('nombre');
+    let nomina = localStorage.getItem('nomina');
     let departamento = localStorage.getItem('departamento');
 
     async function checkSession(){
-        if(nombre == '' || nombre == undefined)
-            isLooged = false;
+        console.log("log", isLooged.value)
+        if(nomina == '' || nomina == undefined)
+            isLooged.value = false;
         else
-            isLooged = true;
+            isLooged.value = true;
     }
 
 onMounted (() => {
-    checkSession
+    checkSession()
 })
 </script>
 <template>
@@ -29,7 +30,7 @@ onMounted (() => {
         </b-navbar-brand>
         <b-navbar-nav class="ml-auto">
             <b-nav-item-dropdown text="Usuario" right v-if="isLooged == true">
-                <b-dropdown-item> <span><i class="bi bi-person-badge-fill"></i></span> {{ nombre }}</b-dropdown-item>
+                <b-dropdown-item> <span><i class="bi bi-person-badge-fill"></i></span> {{ nomina }}</b-dropdown-item>
                 <b-dropdown-item><span><i class="bi bi-buildings-fill"></i></span> {{ departamento }}</b-dropdown-item>
             </b-nav-item-dropdown>
             <b-nav-item-dropdown text="Identificate" right v-if="isLooged == false">

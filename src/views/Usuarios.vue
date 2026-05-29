@@ -34,7 +34,7 @@ const userModel = reactive({
     edad: "",
     username: "",
     superid: "",
-    deparamento: "",
+    departamento: "",
     puesto: "",
     rol: ""
 });
@@ -139,6 +139,40 @@ function modalTitle(type){
             break;
         default:
             break;
+    }
+}
+async function createUser() {
+    console.log(userModel);
+    try{
+        const response = await api.post('/usuarios/usuario', userModel);
+        if(response.data.code == "USER_CREATED"){
+            Swal.fire({
+                title: "Exito",
+                text: response.data.message,
+                icon: "success"
+            });
+        }else {
+            Swal.fire({
+                title: "Advertencia",
+                text: response.data.message,
+                icon: "warning"
+            });
+        }
+        
+    }catch(err){
+        if(err.response.data){
+            Swal.fire({
+                title: "Advertencia",
+                text: err.response.data.error,
+                icon: "warning"
+            })
+        }else {
+            Swal.fire({
+                title: "Error",
+                text: "Ocurrió un error inesperado.",
+                icon: "error"
+            })
+        }
     }
 }
 onMounted(() => {
@@ -255,7 +289,7 @@ onMounted(() => {
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Departamento</label>
-                        <select name="" id="" class="custom-select" v-model="userModel.deparamento">
+                        <select name="" id="" class="custom-select" v-model="userModel.departamento">
                             <option v-for="index in arr_departamentos" :value="index.id"> {{ index.descripcion }} </option>
                         </select>
                     </div>
@@ -271,7 +305,7 @@ onMounted(() => {
                 <b-col>
                     <div class="input-group">
                         <label for="" class="label">Rol</label>
-                        <select name="" id="" class="custom-select" v-model="userModel.puesto">
+                        <select name="" id="" class="custom-select" v-model="userModel.rol">
                             <option v-for="index in arr_roles" :value="index.id"> {{ index.descripcion }} </option>
                         </select>
                     </div>
@@ -281,7 +315,7 @@ onMounted(() => {
 
         <template #footer>
             <b-button variant="" v-on:click="userModal = false">Cancelar</b-button>
-            <b-button variant="success">Enviar</b-button>
+            <b-button variant="success" v-on:click="createUser">Enviar</b-button>
         </template>
      </b-modal>
 </template>
